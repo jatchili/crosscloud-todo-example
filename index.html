@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Crosscloud example: To-do List</title>
+<style>
+	li.done {
+		text-decoration: line-through;
+	}
+	li.notdone {
+		font-weight: bold;
+	}
+</style>
+</head>
+<body>
+	<h1>Crosscloud example: To-do List</h1>
+	<p>Enter in the URL for a JSON file and press "fetch". Some sample URLs are given below. (<a href="http://www.w3.org/People/Sandro/todo-challenge">Specification</a>)</p>
+	<ul>	
+		<li>http://www.w3.org/People/Sandro/todo-samples/0.json</li>
+		<li>http://www.w3.org/People/Sandro/todo-samples/1.json</li>
+		<li>http://www.w3.org/People/Sandro/todo-samples/2.json</li>
+	</ul>
+	<input id="jsonUrl" type="text" placeholder="URL for JSON" size="80"/> <button onclick="fetch()">fetch</button>
+	<br/><img width="80" height="15" title="vanilla js" alt="vanilla js" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAPBAMAAACB51W8AAAAJFBMVEX/ZgCJjnlmZmb///////////+qqqr////z2JCqqqoAAAD///+yFabeAAAAcUlEQVQokbWSwQ3AIAhFnbbdwG7QEDYgLkDYwLhcUaOhHloufk04+PJIwHA5E+LhyhkifOemlp0g6xFAYL1aAHmCmUp+gZXiAWqdYLJGREBhxAGKWOMCduliTAqSad2eO6hiMa0LpbJ1PP+gd9fe3/MArgg2b0oDyO8AAAAASUVORK5CYII="/>
+	<hr/>
+	<h2>To-do list:</h2>
+	<ol id="todolist"></ol>
+
+</body>
+
+<script>
+function fetch() {
+	var url = document.getElementById("jsonUrl").value;
+	if (url) {
+		httpGet(url, function(responseText) {
+			var responseJSON = JSON.parse(responseText);
+			if (responseJSON.items) {
+				var todoList = document.getElementById("todolist")
+				while(todoList.firstChild) {
+				    todoList.removeChild(todoList.firstChild);
+				}
+				for (var i=0; i<responseJSON.items.length; i++) {
+					var item = responseJSON.items[i];
+					var li = document.createElement("li");
+					li.innerHTML = item.description;
+					li.className = (item.done ? "done" : "notdone");
+					todoList.appendChild(li);
+				}
+			}		
+		});
+	}
+}
+
+function httpGet(url, callback) {
+	var request = new XMLHttpRequest();
+	request.open("GET", url, true);
+	request.onreadystatechange = function() {
+    if (request.readyState==4 && request.status==200) {
+    		callback(request.responseText);
+    	}
+ 	}
+	request.send();
+}
+
+</script>
+
+</html>
